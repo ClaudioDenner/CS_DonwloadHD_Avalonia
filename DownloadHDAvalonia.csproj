@@ -53,12 +53,6 @@
     </None>
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(Configuration)'=='Alpha'">
-    <DefineConstants>TRACE;ALPHA</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Beta'">
-    <DefineConstants>TRACE;BETA</DefineConstants>
-  </PropertyGroup>
 
   <Import Project="..\..\SharedClientSide\SharedClientSide_AVALONIA\SharedClientSide_AVALONIA.projitems" Label="Shared" />
 </Project>
