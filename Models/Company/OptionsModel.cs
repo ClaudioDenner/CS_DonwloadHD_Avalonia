@@ -14,31 +14,37 @@ namespace DownloadHDAvalonia.Models.Company
         [ObservableProperty]
         private string _appTheme;
 
-        private static string AppConfigFolder =>
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Separacao", "app");
-
-        private static string SettingsFilePath =>
-            Path.Combine(AppConfigFolder, "settings.json");
-
         public void Save()
         {
-            var json = JsonConvert.SerializeObject(this);
-            if (!Directory.Exists(AppConfigFolder))
-                Directory.CreateDirectory(AppConfigFolder);
-            File.WriteAllText(SettingsFilePath, json);
+            AppSettingsLoader.MergeAndWriteSettings(this);
         }
 
         public static OptionsModel Load()
         {
-            if (File.Exists(SettingsFilePath))
+            return AppSettingsLoader.LoadWithRepair(
+                CreateDefault,
+                RepairDefaults,
+                model => model.Save());
+        }
+
+        private static bool RepairDefaults(OptionsModel model)
+        {
+            bool repaired = false;
+
+            if (string.IsNullOrWhiteSpace(model.AppTheme))
             {
-                var json = File.ReadAllText(SettingsFilePath);
-                return JsonConvert.DeserializeObject<OptionsModel>(json);
+                model.AppTheme = AppSettingsLoader.DefaultAppTheme;
+                repaired = true;
             }
 
+            return repaired;
+        }
+
+        private static OptionsModel CreateDefault()
+        {
             var om = new OptionsModel
             {
-                DefaultPathToDownloadProfessionalTaskFiles = Constants.SeparationFolder.FullName
+                AppTheme = AppSettingsLoader.DefaultAppTheme
             };
             om.Save();
             return om;
@@ -49,7 +55,3 @@ namespace DownloadHDAvalonia.Models.Company
         }
     }
 }
-
-
-
-
